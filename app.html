@@ -16,7 +16,7 @@
         .grid-metodos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
         .btn-pago { width: 100%; padding: 15px 5px; border: none; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; }
         .efectivo { background-color: #2ecc71; } .transferencia { background-color: #3498db; } .tarjeta { background-color: #9b59b6; }
-        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #4a90e2; color: #fff; }
+        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: #fff; background-color: #4a90e2; }
         .alert-box { background-color: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; }
         .info-turno { font-size: 14px; text-align: center; margin-bottom: 20px; padding: 12px; border-radius: 8px; font-weight: bold; background: #eee; }
     </style>
@@ -47,7 +47,8 @@
     </div>
 </div>
 <script>
-    const WEB_APP_URL = "https://google.com"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-Rrdzx69xiUwCYR_VfN6UziaP2BYQvb8PCOI8_p2TO_nLfIrdbruFnqi61aBVrJszcw/exec
+"; 
     let t = { e: "", k: "" }; 
     function entrar() {
         t.e = document.getElementById('emp').value; t.k = document.getElementById('kio').value;
@@ -60,11 +61,19 @@
         if(!val || val <= 0) return alert("Monto inválido.");
         const botones = document.querySelectorAll('.btn-pago'); botones.forEach(btn => btn.disabled = true);
         const datos = { id: Date.now(), fecha: new Date().toLocaleString('es-AR'), emp: t.e, kio: t.k, monto: val, medio: m };
-        fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) })
-        .then(() => {
-            valInput.value = ""; const alerta = document.getElementById('alerta'); alerta.style.display = 'block';
-            setTimeout(() => alerta.style.display = 'none', 1200);
-        }).catch(err => alert("Error: " + err)).finally(() => botones.forEach(btn => btn.disabled = false));
+        
+        fetch(WEB_APP_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(datos) })
+        .then(res => res.json())
+        .then(resData => {
+            if(resData.result === "success") {
+                valInput.value = ""; const alerta = document.getElementById('alerta'); alerta.style.display = 'block';
+                setTimeout(() => alerta.style.display = 'none', 1200);
+            } else {
+                alert("Error de Google Sheets: " + resData.error);
+            }
+        })
+        .catch(err => alert("Error de red o conexión: " + err))
+        .finally(() => botones.forEach(btn => btn.disabled = false));
     }
 </script>
 </body>
