@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; font-family: sans-serif; margin: 0; padding: 0; }
         body { background: linear-gradient(135deg, #e0e6ed, #f4f6f9); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        .container { background: #fff; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); text-align: center; position: relative; }
+        .container { background: #fff; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); text-align: center; }
         h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; font-weight: 700; }
         .step { display: none; } .step.active { display: block; }
         .form-group { margin-bottom: 18px; text-align: left; }
@@ -21,10 +21,10 @@
         .transferencia { background: linear-gradient(135deg, #3498db, #2980b9); }
         .tarjeta { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
         .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; background: linear-gradient(135deg, #4a90e2, #357abd); color: #fff; }
-        .btn-salir { background: #e2e8f0; color: #4a5568; padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; position: absolute; top: 15px; right: 15px; transition: background 0.2s; }
-        .btn-salir:hover { background: #cbd5e1; }
+        .btn-salir { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; background: #f1f5f9; color: #475569; margin-top: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: background 0.2s; }
+        .btn-salir:active { transform: scale(0.98); }
         .alert-box { background-color: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; border: 1px solid #c8e6c9; }
-        .info-turno { font-size: 14px; text-align: center; margin-bottom: 20px; padding: 12px; border-radius: 10px; font-weight: bold; background: #edf2f7; color: #4a5568; line-height: 1.5; margin-top: 15px; }
+        .info-turno { font-size: 14px; text-align: center; margin-bottom: 20px; padding: 12px; border-radius: 10px; font-weight: bold; background: #edf2f7; color: #4a5568; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -40,7 +40,6 @@
         <button class="btn-primary" onclick="entrar()">Iniciar Turno</button>
     </div>
     <div id="p2" class="step">
-        <button class="btn-salir" onclick="salirTurno()">❌ Salir del Turno</button>
         <h2>💵 Registrar Venta</h2>
         <div id="box" class="info-turno"></div>
         <div id="alerta" class="alert-box">✓ Venta Guardada con Éxito</div>
@@ -51,36 +50,65 @@
             <button class="btn-pago transferencia" onclick="guardar('Transferencia')">📲 TRANSF.</button>
             <button class="btn-pago tarjeta" onclick="guardar('Tarjeta')">💳 TARJETA</button>
         </div>
+        <button class="btn-salir" id="btnCierre" onclick="salirTurno()">🚪 Cerrar Turno y Salir</button>
     </div>
 </div>
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCL9XJmDoEFSjPhEYyF5LUF8OPVbH2cHENDRLmn_YxW_Uydqe7h9YdnV8o4XY7wLxO/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEqSWD7UAJ-Thvqd_aFb1wEooxZLDV2q7bq0Fe_Rr4kdhwtuqNhqsinYZU2P4nRnR8/exec"; 
     let t = { e: "", k: "" }; 
+    let acE = 0; let acT = 0; let acC = 0; // Acumuladores locales de Efectivo, Transferencia y Tarjeta
+    
     function entrar() {
         t.e = document.getElementById('emp').value; t.k = document.getElementById('kio').value;
         if(!t.e || !t.k) return alert("Seleccione Nombre y Kiosco.");
+        acE = 0; acT = 0; acC = 0; // Reiniciar sumas al iniciar un nuevo turno
         document.getElementById('box').innerHTML = `👤 Empleado: <b>${t.e}</b><br>🏪 Kiosco: <b>${t.k}</b>`;
         document.getElementById('p1').classList.remove('active'); document.getElementById('p2').classList.add('active');
     }
-    function salirTurno() {
-        if(!confirm("¿Seguro que querés salir del turno actual?")) return;
-        document.getElementById('emp').value = "";
-        document.getElementById('kio').value = "";
-        document.getElementById('mon').value = "";
-        t = { e: "", k: "" };
-        document.getElementById('p2').classList.remove('active');
-        document.getElementById('p1').classList.add('active');
-    }
+    
     function guardar(m) {
         const valInput = document.getElementById('mon'); const val = parseFloat(valInput.value); 
         if(!val || val <= 0) return alert("Monto inválido.");
+        
+        // Sumar al acumulador local correspondiente antes de enviar
+        if(m === 'Efectivo') acE += val;
+        if(m === 'Transferencia') acT += val;
+        if(m === 'Tarjeta') acC += val;
+        
         const botones = document.querySelectorAll('.btn-pago'); botones.forEach(btn => btn.disabled = true);
-        const datos = { id: Date.now(), fecha: new Date().toLocaleString('es-AR'), emp: t.e, kio: t.k, monto: val, medio: m };
+        const datos = { accion: "venta", id: Date.now(), fecha: new Date().toLocaleString('es-AR'), emp: t.e, kio: t.k, monto: val, medio: m };
+        
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) })
         .then(() => {
             valInput.value = ""; const alerta = document.getElementById('alerta'); alerta.style.display = 'block';
             setTimeout(() => alerta.style.display = 'none', 1200);
         }).catch(err => alert("Error: " + err)).finally(() => botones.forEach(btn => btn.disabled = false));
+    }
+    
+    function salirTurno() {
+        if(!confirm(`¿Seguro que querés cerrar el turno actual?\n\nSe enviará el resumen de totales a Sheets:\n• Efectivo: $${acE}\n• Transf: $${acT}\n• Tarjeta: $${acC}`)) return;
+        
+        const btnC = document.getElementById('btnCierre'); btnC.disabled = true; btnC.innerText = "Guardando Totales...";
+        
+        const datosCierre = {
+            accion: "cierre",
+            fecha: new Date().toLocaleString('es-AR'),
+            emp: t.e,
+            kio: t.k,
+            totEfectivo: acE,
+            totTransferencia: acT,
+            totTarjeta: acC
+        };
+        
+        fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datosCierre) })
+        .then(() => {
+            alert("✓ ¡Cierre de turno y totales guardados con éxito en Sheets!");
+            document.getElementById('emp').value = ""; document.getElementById('kio').value = ""; document.getElementById('mon').value = "";
+            t = { e: "", k: "" }; acE = 0; acT = 0; acC = 0;
+            document.getElementById('p2').classList.remove('active'); document.getElementById('p1').classList.add('active');
+        })
+        .catch(err => alert("Error al cerrar turno: " + err))
+        .finally(() => { btnC.disabled = false; btnC.innerText = "🚪 Cerrar Turno y Salir"; });
     }
 </script>
 </body>
