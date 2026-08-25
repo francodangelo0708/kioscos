@@ -37,7 +37,7 @@
             <option value="">-- Elegir --</option><option value="Amarillo">Amarillo</option><option value="Rojo">Rojo</option><option value="Verde">Verde</option>
         </select></div>
         <div class="form-group"><label>🌤️ Seleccione el Turno:</label><select id="tur">
-            <option value="">-- Elegir --</option><option value="Mañana">Mañana 🌅</option><option value="Tarde">Tarde 🌇</option><option value="Noche">Noche 🌌</option>
+            <option value="">-- Elegir --</option><option value="Mañana">Mañana</option><option value="Tarde">Tarde</option><option value="Noche">Noche</option>
         </select></div>
         <button class="btn-primary" onclick="entrar()">Iniciar Turno</button>
     </div>
@@ -79,12 +79,12 @@
         }).catch(err => alert("Error: " + err)).finally(() => botones.forEach(btn => btn.disabled = false));
     }
     function salirTurno() {
-        if(!confirm(`¿Cerrar turno ${t.tur}?\n\nResumen a enviar:\n• Efectivo: $${acE}\n• Transf: $${acT}\n• Tarjeta: $${acC}`)) return;
+        if(!confirm("¿Está seguro de cerrar el turno actual?")) return;
         const btnC = document.getElementById('btnCierre'); btnC.disabled = true; btnC.innerText = "Guardando Totales...";
         const datosCierre = { accion: "cierre", fecha: new Date().toLocaleString('es-AR'), emp: t.e, kio: t.k, tur: t.tur, totEfectivo: acE, totTransferencia: acT, totTarjeta: acC };
         fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datosCierre) })
         .then(() => {
-            alert("✓ ¡Turno cerrado y totales guardados!");
+            alert("✓ ¡Turno cerrado con éxito! Los totales se registraron en la pestaña Resumen.");
             document.getElementById('emp').value = ""; document.getElementById('kio').value = ""; document.getElementById('tur').value = ""; document.getElementById('mon').value = "";
             t = { e: "", k: "", tur: "" }; acE = 0; acT = 0; acC = 0;
             document.getElementById('p2').classList.remove('active'); document.getElementById('p1').classList.add('active');
