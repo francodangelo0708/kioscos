@@ -6,38 +6,42 @@
     <title>Control de Pagos Internos</title>
     <style>
         * { box-sizing: border-box; font-family: sans-serif; margin: 0; padding: 0; }
-        body { background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        .container { background: #fff; width: 100%; max-width: 450px; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; }
-        h2 { margin-bottom: 20px; font-size: 22px; color: #1a1a1a; }
+        body { background: linear-gradient(135deg, #e0e6ed, #f4f6f9); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        .container { background: #fff; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); text-align: center; }
+        h2 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; font-weight: 700; }
         .step { display: none; } .step.active { display: block; }
         .form-group { margin-bottom: 18px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #555; }
-        select, input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 18px; text-align: center; outline: none; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: #4a5568; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; text-align: center; outline: none; font-weight: 500; color: #2d3748; }
+        select:focus, input:focus { border-color: #3182ce; box-shadow: 0 0 0 3px rgba(66,153,225,0.15); }
         .grid-metodos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .btn-pago { width: 100%; padding: 15px 5px; border: none; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; }
-        .efectivo { background-color: #2ecc71; } .transferencia { background-color: #3498db; } .tarjeta { background-color: #9b59b6; }
-        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: #fff; background-color: #4a90e2; }
-        .alert-box { background-color: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; }
-        .info-turno { font-size: 14px; text-align: center; margin-bottom: 20px; padding: 12px; border-radius: 8px; font-weight: bold; background: #eee; }
+        .btn-pago { width: 100%; padding: 15px 5px; border: none; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: all 0.2s; }
+        .btn-pago:active { transform: scale(0.96); }
+        .efectivo { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .transferencia { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .tarjeta { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; background: linear-gradient(135deg, #4a90e2, #357abd); color: #fff; box-shadow: 0 4px 12px rgba(74,144,226,0.2); }
+        .alert-box { background-color: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; border: 1px solid #c8e6c9; }
+        .info-turno { font-size: 14px; text-align: center; margin-bottom: 20px; padding: 12px; border-radius: 10px; font-weight: bold; background: #edf2f7; color: #4a5568; line-height: 1.5; }
     </style>
 </head>
 <body>
 <div class="container">
     <div id="p1" class="step active">
-        <h2>Apertura de Turno</h2>
-        <div class="form-group"><label>Nombre:</label><select id="emp">
+        <h2>🔑 Apertura de Turno</h2>
+        <div class="form-group"><label>👤 Nombre del Empleado:</label><select id="emp">
             <option value="">-- Elegir --</option><option value="Agostina">Agostina</option><option value="Camila">Camila</option><option value="Eva">Eva</option><option value="Gemina">Gemina</option><option value="German">German</option><option value="Karen">Karen</option><option value="Martina">Martina</option><option value="Melisa">Melisa</option><option value="Micaela">Micaela</option><option value="Milton">Milton</option><option value="Natalia">Natalia</option><option value="Victoria">Victoria</option><option value="Yamila">Yamila</option><option value="Yesica">Yesica</option>
         </select></div>
-        <div class="form-group"><label>Kiosco:</label><select id="kio">
-            <option value="">-- Elegir --</option><option value="Amarillo">Amarillo</option><option value="Rojo">Rojo</option><option value="Verde">Verde</option>
+        <div class="form-group"><label>🏪 Seleccione el Kiosco:</label><select id="kio">
+            <option value="">-- Elegir --</option><option value="Amarillo">Amarillo 🟡</option><option value="Rojo">Rojo 🔴</option><option value="Verde">Verde 🟢</option>
         </select></div>
         <button class="btn-primary" onclick="entrar()">Iniciar Turno</button>
     </div>
     <div id="p2" class="step">
-        <h2>Registrar Venta</h2>
+        <h2>💵 Registrar Venta</h2>
         <div id="box" class="info-turno"></div>
-        <div id="alerta" class="alert-box">✓ Guardado en Google Sheets</div>
-        <div class="form-group"><label>Monto Cobrado ($):</label><input type="number" id="mon" placeholder="Ej: 1500" inputmode="numeric"></div>
+        <div id="alerta" class="alert-box">✓ Venta Guardada con Éxito</div>
+        <div class="form-group"><label>Monto Cobrado ($):</label><input type="text" id="mon" placeholder="Escribir monto" inputmode="numeric"></div>
         <label>Medio de Pago:</label>
         <div class="grid-metodos">
             <button class="btn-pago efectivo" onclick="guardar('Efectivo')">💵 EFECTIVO</button>
@@ -47,13 +51,13 @@
     </div>
 </div>
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz-Rrdzx69xiUwCYR_VfN6UziaP2BYQvb8PCOI8_p2TO_nLfIrdbruFnqi61aBVrJszcw/exec
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCL9XJmDoEFSjPhEYyF5LUF8OPVbH2cHENDRLmn_YxW_Uydqe7h9YdnV8o4XY7wLxO/exec
 "; 
     let t = { e: "", k: "" }; 
     function entrar() {
         t.e = document.getElementById('emp').value; t.k = document.getElementById('kio').value;
         if(!t.e || !t.k) return alert("Seleccione Nombre y Kiosco.");
-        document.getElementById('box').innerHTML = `Empleado: ${t.e}<br>Kiosco: ${t.k}`;
+        document.getElementById('box').innerHTML = `👤 Empleado: <b>${t.e}</b><br>🏪 Kiosco: <b>${t.k}</b>`;
         document.getElementById('p1').classList.remove('active'); document.getElementById('p2').classList.add('active');
     }
     function guardar(m) {
@@ -61,19 +65,11 @@
         if(!val || val <= 0) return alert("Monto inválido.");
         const botones = document.querySelectorAll('.btn-pago'); botones.forEach(btn => btn.disabled = true);
         const datos = { id: Date.now(), fecha: new Date().toLocaleString('es-AR'), emp: t.e, kio: t.k, monto: val, medio: m };
-        
-        fetch(WEB_APP_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(datos) })
-        .then(res => res.json())
-        .then(resData => {
-            if(resData.result === "success") {
-                valInput.value = ""; const alerta = document.getElementById('alerta'); alerta.style.display = 'block';
-                setTimeout(() => alerta.style.display = 'none', 1200);
-            } else {
-                alert("Error de Google Sheets: " + resData.error);
-            }
-        })
-        .catch(err => alert("Error de red o conexión: " + err))
-        .finally(() => botones.forEach(btn => btn.disabled = false));
+        fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) })
+        .then(() => {
+            valInput.value = ""; const alerta = document.getElementById('alerta'); alerta.style.display = 'block';
+            setTimeout(() => alerta.style.display = 'none', 1200);
+        }).catch(err => alert("Error: " + err)).finally(() => botones.forEach(btn => btn.disabled = false));
     }
 </script>
 </body>
